@@ -40,7 +40,7 @@ def plot_metric_f1score(scores, metric_name):
     # Assign colors: different color for top 3, another color for the rest
     colors = ['gold' if i < 3 else 'skyblue' for i in range(len(models))]
     
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(10, 6))
     plt.bar(models, values, color=colors)
     plt.xlabel('Models')
     plt.ylabel(metric_name)
@@ -48,6 +48,45 @@ def plot_metric_f1score(scores, metric_name):
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     st.pyplot(plt)
+    
+# Custom CSS for styling the button
+button_css = """
+    <style>
+        .stButton > button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: color 0.3s ease; /* Smooth transition for text color */
+        }
+        .stButton > button:hover {
+            color: black; /* Black text on hover */
+        }
+        .stButton {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+"""
+
+# Custom CSS for the result box
+result_box_css = """
+    <style>
+        .result-box {
+            background-color: #333; /* Dark grey border */
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+"""
 
 # Sidebar setup for navigation
 with st.sidebar:
@@ -116,8 +155,13 @@ if page == "Analysis Result":
                     f1_scores[model_name] = f1_score
                     
             # Plotting Precision, Recall, and F1 Score
+            st.header("Precision")
             plot_metric_f1score(precision_scores, 'Precision')
+            
+            st.header("Recall")
             plot_metric_f1score(recall_scores, 'Recall')
+            
+            st.header("F1 Score")
             plot_metric_f1score(f1_scores, 'F1 Score')
                     
             
@@ -125,4 +169,20 @@ if page == "Analysis Result":
             st.write("Please select at least one model to review the metrics.")
 
 elif page == "Predict GPT":
-    st.write("Content for Predict GPT tab")
+    # Apply the custom CSS
+    st.markdown(button_css, unsafe_allow_html=True)
+    # Apply the custom CSS
+    st.markdown(result_box_css, unsafe_allow_html=True)
+
+    # Text input area
+    text = st.text_area('Text Input')
+
+    # Centered Predict button
+    if st.button('Predict'):
+        if len(text) >= 256:
+            result = f"Panjang Text yaitu {len(text)}"
+        else:
+            result = "Panjang Text Kurang Dari 256"
+            
+        # Display the result in a styled box
+        st.markdown(f'<div class="result-box">Result: {result}</div>', unsafe_allow_html=True)
