@@ -1,9 +1,11 @@
+import os
+import tensorflow as tf
 import streamlit as st
 import pandas as pd
 import numpy as np
-import os
 import re
 import matplotlib.pyplot as plt
+from transformers import AutoTokenizer, TFT5EncoderModel
 
 # Function to create checkboxes and return selected models
 def get_selected_models():
@@ -48,6 +50,25 @@ def plot_metric_f1score(scores, metric_name):
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     st.pyplot(plt)
+
+# Function to load the model
+@st.cache_resource
+def load_model():
+    model = tf.keras.models.load_model('saved-model/t5_fullMerg.h5', custom_objects={'TFT5EncoderModel': TFT5EncoderModel})
+    tokenizer = AutoTokenizer.from_pretrained("michelecafagna26/t5-base-finetuned-sst2-sentiment")  # Adjust the model name as necessary
+    return model, tokenizer
+
+def preprocess_text(dataframe, tokenizer, max_length=256):
+    inputs = tokenizer(dataframe, padding=True, truncation=True, return_tensors="tf", max_length=max_length)
+    input_ids = inputs["input_ids"]
+    attention_mask = inputs["attention_mask"]
+    return {"input_ids": input_ids, "attention_mask": attention_mask}
+
+# Function to make predictions
+def make_prediction(input_text, tokenizer):
+    inputs = preprocess_text(input_text, tokenizer)
+    predictions = model(inputs)
+    return predictions
     
 # Custom CSS for styling the button
 button_css = """
@@ -169,20 +190,18 @@ if page == "Analysis Result":
             st.write("Please select at least one model to review the metrics.")
 
 elif page == "Predict GPT":
-    # Apply the custom CSS
-    st.markdown(button_css, unsafe_allow_html=True)
-    # Apply the custom CSS
-    st.markdown(result_box_css, unsafe_allow_html=True)
+    
+    # Load the model
+    model, tokenizer = load_model()
+    
+    # Streamlit app interface
+    st.title('Text Prediction using T5 Model')
+    input_text = st.text_area('Enter text to predict')
 
-    # Text input area
-    text = st.text_area('Text Input')
-
-    # Centered Predict button
     if st.button('Predict'):
-        if len(text) >= 256:
-            result = f"Panjang Text yaitu {len(text)}"
+        word_count = len(input_text.split())
+        if word_count >= 256:
+            predictions = make_prediction(input_text, tokenizer)
+            st.write(predictions)
         else:
-            result = "Panjang Text Kurang Dari 256"
-            
-        # Display the result in a styled box
-        st.markdown(f'<div class="result-box">Result: {result}</div>', unsafe_allow_html=True)
+            st.write('Please add more text. Text is too short')
