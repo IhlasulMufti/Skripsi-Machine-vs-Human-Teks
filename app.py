@@ -43,26 +43,16 @@ st.markdown("""
         .logo {
             position: absolute;
             top: 10px;
-            right: 10px;
         }
     </style>
     """, unsafe_allow_html=True)
-
-# Add your logo image using HTML
-st.markdown(
-    """
-    <div class="logo">
-        <img src="asset/Heading.png" width="100">
-    </div>
-    """, unsafe_allow_html=True
-)
 
 # Function to create checkboxes and return selected models
 def get_selected_models():
     selected_models = []
     
     with st.container():
-        st.subheader("Select Models to Review")
+        st.write("Select Models to Review")
         cols = st.columns(3)  # Create 3 columns for checkboxes
         for i, model in enumerate(model_names):
             with cols[i % 3]:  # Distribute checkboxes across the columns
@@ -119,90 +109,144 @@ def make_prediction(input_text, tokenizer):
     prediction_value = predictions.numpy().flatten()[0]
     return prediction_value
 
+model_names = [
+    'ernie_abstract', 't5_abstract', 'xlnet_abstract',
+    'ernie_wiki', 't5_wiki', 'xlnet_wiki',
+    'ernie_balMerg', 't5_balMerg', 'xlnet_balMerg',
+    'ernie_fullMerg', 't5_fullMerg', 'xlnet_fullMerg'
+]
+
+loss_df = pd.read_csv('combined-history/loss_result.csv')
+accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
+val_loss_df = pd.read_csv('combined-history/val_loss_result.csv')
+val_accuracy_df = pd.read_csv('combined-history/val_accuracy_result.csv')
+
 # Sidebar setup for navigation
-with st.sidebar:
-    model_names = [
-        'ernie_abstract', 't5_abstract', 'xlnet_abstract',
-        'ernie_wiki', 't5_wiki', 'xlnet_wiki',
-        'ernie_balMerg', 't5_balMerg', 'xlnet_balMerg',
-        'ernie_fullMerg', 't5_fullMerg', 'xlnet_fullMerg'
-    ]
+with st.sidebar:            
+    with st.container():
+        # Add your logo image using HTML
+        st.markdown(
+            """
+            <div class="logo">
+                <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="150">
+            </div>
+            """, unsafe_allow_html=True
+        )
+        
+    st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
+    with st.container():
+        page = st.selectbox(
+            label="Navigation",
+            options=("Home", "Analysis Result", "Predict GPT")
+        )
 
-    loss_df = pd.read_csv('combined-history/loss_result.csv')
-    accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
-    val_loss_df = pd.read_csv('combined-history/val_loss_result.csv')
-    val_accuracy_df = pd.read_csv('combined-history/val_accuracy_result.csv')
+match page:
+    case "Home":
+        with st.container():
+            # Add your logo image using HTML
+            st.markdown(
+                """
+                <div class="logo">
+                    <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="250">
+                </div>
+                """, unsafe_allow_html=True
+            )
+            
+        st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
+        st.header("Home")
     
-    page = st.selectbox(
-        label="Navigation",
-        options=("Analysis Result", "Predict GPT")
-    )
-
-if page == "Analysis Result":
-    st.header("Analysis Results")
-    selected_models = get_selected_models()
-    
-    tab1, tab2 = st.tabs(["Accuracy Score", "F1-Score"])
-    
-    with tab1:
-        if selected_models:
-            col1, col2 = st.columns(2)
-            with col1:
-                st.header("Loss")
-                plot_metric_accuracy(loss_df, 'Loss', selected_models)
+    case "Analysis Result":
+        with st.container():
+            # Add your logo image using HTML
+            st.markdown(
+                """
+                <div class="logo">
+                    <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="250">
+                </div>
+                """, unsafe_allow_html=True
+            )
+            
+        st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
+            
+        with st.container():
+            st.header("Analysis Results")
+            selected_models = get_selected_models()
+        
+        tab1, tab2 = st.tabs(["Accuracy Score", "F1-Score"])
+        
+        with tab1:
+            if selected_models:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.header("Loss")
+                    plot_metric_accuracy(loss_df, 'Loss', selected_models)
+                    
+                    st.header("Validation Loss")
+                    plot_metric_accuracy(val_loss_df, 'Validation Loss', selected_models)
                 
-                st.header("Validation Loss")
-                plot_metric_accuracy(val_loss_df, 'Validation Loss', selected_models)
-            
-            with col2:
-                st.header("Accuracy")
-                plot_metric_accuracy(accuracy_df, 'Accuracy', selected_models)
+                with col2:
+                    st.header("Accuracy")
+                    plot_metric_accuracy(accuracy_df, 'Accuracy', selected_models)
 
-                st.header("Validation Accuracy")
-                plot_metric_accuracy(val_accuracy_df, 'Validation Accuracy', selected_models)
-        else:
-            st.warning("Please select at least one model to review the metrics.")
-            
-    with tab2:
-        if selected_models:
-            precision_scores = {}
-            recall_scores = {}
-            f1_scores = {}
-            
-            for model_name in selected_models:
-                file_name = f"f1score-history/{model_name}.txt"
-                with open(file_name, 'r') as file:
-                    content = file.read()
-                    precision = float(re.search(r'Precision:\s*([\d.]+)', content).group(1))
-                    recall = float(re.search(r'Recall:\s*([\d.]+)', content).group(1))
-                    f1_score = float(re.search(r'F1 Score:\s*([\d.]+)', content).group(1))
-                    
-                    precision_scores[model_name] = precision
-                    recall_scores[model_name] = recall
-                    f1_scores[model_name] = f1_score
-                    
-            st.header("Precision")
-            plot_metric_f1score(precision_scores, 'Precision')
-            
-            st.header("Recall")
-            plot_metric_f1score(recall_scores, 'Recall')
-            
-            st.header("F1 Score")
-            plot_metric_f1score(f1_scores, 'F1 Score')
-        else:
-            st.warning("Please select at least one model to review the metrics.")
+                    st.header("Validation Accuracy")
+                    plot_metric_accuracy(val_accuracy_df, 'Validation Accuracy', selected_models)
+            else:
+                st.error("Please select at least one model to review the metrics.")
+                
+        with tab2:
+            if selected_models:
+                precision_scores = {}
+                recall_scores = {}
+                f1_scores = {}
+                
+                for model_name in selected_models:
+                    file_name = f"f1score-history/{model_name}.txt"
+                    with open(file_name, 'r') as file:
+                        content = file.read()
+                        precision = float(re.search(r'Precision:\s*([\d.]+)', content).group(1))
+                        recall = float(re.search(r'Recall:\s*([\d.]+)', content).group(1))
+                        f1_score = float(re.search(r'F1 Score:\s*([\d.]+)', content).group(1))
+                        
+                        precision_scores[model_name] = precision
+                        recall_scores[model_name] = recall
+                        f1_scores[model_name] = f1_score
+                        
+                st.header("Precision")
+                plot_metric_f1score(precision_scores, 'Precision')
+                
+                st.header("Recall")
+                plot_metric_f1score(recall_scores, 'Recall')
+                
+                st.header("F1 Score")
+                plot_metric_f1score(f1_scores, 'F1 Score')
+            else:
+                st.error("Please select at least one model to review the metrics.")
 
-elif page == "Predict GPT":
-    model, tokenizer = load_model()
-    
-    st.title('Text Prediction using T5 Model')
-    input_text = st.text_area('Enter text to predict')
+    case "Predict GPT":
+        model, tokenizer = load_model()
+        
+        with st.container():
+            # Add your logo image using HTML
+            st.markdown(
+                """
+                <div class="logo">
+                    <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="250">
+                </div>
+                """, unsafe_allow_html=True
+            )
+            
+        st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
+        
+        st.header('Text Prediction')
+        input_text = st.text_area('Enter text to predict')
 
-    if st.button('Predict'):
-        word_count = len(input_text.split())
-        if word_count >= 183:
-            prediction_value = make_prediction(input_text, tokenizer)
-            prediction_percentage = prediction_value * 100
-            st.markdown(f'<div class="result-box">Generated by Machine {prediction_percentage:.2f}%</div>', unsafe_allow_html=True)
-        else:
-            st.warning('Please enter at least 183 words.')
+        
+        if st.button('Predict'):
+            word_count = len(input_text.split())
+            if word_count >= 183:
+                with st.spinner('Wait For Prediction 😉'):
+                    prediction_value = make_prediction(input_text, tokenizer)
+                prediction_percentage = prediction_value * 100
+                st.markdown(f'<div class="result-box">Generated by Machine {prediction_percentage:.2f}%</div>', unsafe_allow_html=True)
+            else:
+                st.error('Please enter at least 183 words.')
