@@ -68,8 +68,10 @@ def preprocess_text(dataframe, tokenizer, max_length=256):
 def make_prediction(input_text, tokenizer):
     inputs = preprocess_text(input_text, tokenizer)
     predictions = model(inputs)
-    return predictions
-    
+    # Convert tensor to numpy array and extract the value
+    prediction_value = predictions.numpy().flatten()[0]
+    return prediction_value
+
 # Custom CSS for styling the button
 button_css = """
     <style>
@@ -102,12 +104,17 @@ result_box_css = """
     <style>
         .result-box {
             background-color: #333; /* Dark grey border */
+            color: white; /* White text */
             padding: 15px;
             border-radius: 10px;
             margin-top: 20px;
         }
     </style>
 """
+
+# Apply the custom CSS
+st.markdown(button_css, unsafe_allow_html=True)
+st.markdown(result_box_css, unsafe_allow_html=True)
 
 # Sidebar setup for navigation
 with st.sidebar:
@@ -128,80 +135,81 @@ with st.sidebar:
         label="Navigation",
         options=("Analysis Result", "Predict GPT")
     )
-    
-if page == "Analysis Result":
-    st.header("Select Models to Review")
-    selected_models = get_selected_models()
-    
-    tab1, tab2 = st.tabs(["Accuracy Score", "F1-Score"])
-    
-    with tab1:
-        col1, col2 = st.columns(2)
-        if selected_models:
-            with col1:
-                st.header("Loss")
-                plot_metric_accuracy(loss_df, 'Loss', selected_models)
-                
-                st.header("Validation Loss")
-                plot_metric_accuracy(val_loss_df, 'Validation Loss', selected_models)
-            
-            with col2:
-                st.header("Accuracy")
-                plot_metric_accuracy(accuracy_df, 'Accuracy', selected_models)
 
-                st.header("Validation Accuracy")
-                plot_metric_accuracy(val_accuracy_df, 'Validation Accuracy', selected_models)
-        else:
-            st.write("Please select at least one model to review the metrics.")
-            
-    with tab2:
-        if selected_models:
-            # Dictionaries to store model name and corresponding scores
-            precision_scores = {}
-            recall_scores = {}
-            f1_scores = {}
-            
-            # Read the scores from each file
-            for model_name in selected_models:
-                file_name = f"f1score-history/{model_name}.txt"  # update the file path
-                with open(file_name, 'r') as file:
-                    content = file.read()
-                    # Extract the scores using regex
-                    precision = float(re.search(r'Precision:\s*([\d.]+)', content).group(1))
-                    recall = float(re.search(r'Recall:\s*([\d.]+)', content).group(1))
-                    f1_score = float(re.search(r'F1 Score:\s*([\d.]+)', content).group(1))
+if page == "Analysis Result":
+    with st.container():
+        st.header("Select Models to Review")
+        selected_models = get_selected_models()
+        
+        tab1, tab2 = st.tabs(["Accuracy Score", "F1-Score"])
+        
+        with tab1:
+            if selected_models:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.header("Loss")
+                    plot_metric_accuracy(loss_df, 'Loss', selected_models)
                     
-                    precision_scores[model_name] = precision
-                    recall_scores[model_name] = recall
-                    f1_scores[model_name] = f1_score
-                    
-            # Plotting Precision, Recall, and F1 Score
-            st.header("Precision")
-            plot_metric_f1score(precision_scores, 'Precision')
-            
-            st.header("Recall")
-            plot_metric_f1score(recall_scores, 'Recall')
-            
-            st.header("F1 Score")
-            plot_metric_f1score(f1_scores, 'F1 Score')
-                    
-            
-        else:
-            st.write("Please select at least one model to review the metrics.")
+                    st.header("Validation Loss")
+                    plot_metric_accuracy(val_loss_df, 'Validation Loss', selected_models)
+                
+                with col2:
+                    st.header("Accuracy")
+                    plot_metric_accuracy(accuracy_df, 'Accuracy', selected_models)
+
+                    st.header("Validation Accuracy")
+                    plot_metric_accuracy(val_accuracy_df, 'Validation Accuracy', selected_models)
+            else:
+                st.markdown(f'<div class="result-box">Please select at least one model to review the metrics.</div>', unsafe_allow_html=True)
+ 
+        with tab2:
+            if selected_models:
+                # Dictionaries to store model name and corresponding scores
+                precision_scores = {}
+                recall_scores = {}
+                f1_scores = {}
+                
+                # Read the scores from each file
+                for model_name in selected_models:
+                    file_name = f"f1score-history/{model_name}.txt"  # update the file path
+                    with open(file_name, 'r') as file:
+                        content = file.read()
+                        # Extract the scores using regex
+                        precision = float(re.search(r'Precision:\s*([\d.]+)', content).group(1))
+                        recall = float(re.search(r'Recall:\s*([\d.]+)', content).group(1))
+                        f1_score = float(re.search(r'F1 Score:\s*([\d.]+)', content).group(1))
+                        
+                        precision_scores[model_name] = precision
+                        recall_scores[model_name] = recall
+                        f1_scores[model_name] = f1_score
+                        
+                # Plotting Precision, Recall, and F1 Score
+                st.header("Precision")
+                plot_metric_f1score(precision_scores, 'Precision')
+                
+                st.header("Recall")
+                plot_metric_f1score(recall_scores, 'Recall')
+                
+                st.header("F1 Score")
+                plot_metric_f1score(f1_scores, 'F1 Score')
+                        
+            else:
+                st.markdown(f'<div class="result-box">Please select at least one model to review the metrics.</div>', unsafe_allow_html=True)
 
 elif page == "Predict GPT":
-    
-    # Load the model
-    model, tokenizer = load_model()
-    
-    # Streamlit app interface
-    st.title('Text Prediction using T5 Model')
-    input_text = st.text_area('Enter text to predict')
+    with st.container():
+        # Load the model
+        model, tokenizer = load_model()
+        
+        # Streamlit app interface
+        st.title('Text Prediction')
+        input_text = st.text_area('Enter text to predict')
 
-    if st.button('Predict'):
-        word_count = len(input_text.split())
-        if word_count >= 256:
-            predictions = make_prediction(input_text, tokenizer)
-            st.write(predictions)
-        else:
-            st.write('Please add more text. Text is too short')
+        if st.button('Predict'):
+            word_count = len(input_text.split())
+            if word_count >= 183:
+                prediction_value = make_prediction(input_text, tokenizer)
+                prediction_percentage = prediction_value * 100
+                st.markdown(f'<div class="result-box">Generated by Machine {prediction_percentage:.2f}%</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="result-box">Please add more text. Text is too short</div>', unsafe_allow_html=True)
