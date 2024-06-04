@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from transformers import AutoTokenizer, TFT5EncoderModel
 
-# Custom CSS for improved styling and positioning the logo
+# Custom CSS
 st.markdown("""
     <style>
         body {
@@ -48,9 +48,11 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Function to create checkboxes and return selected models
+
+
 def get_selected_models():
     selected_models = []
-    
+
     with st.container():
         st.write("Select Models to Review")
         cols = st.columns(3)  # Create 3 columns for checkboxes
@@ -60,14 +62,16 @@ def get_selected_models():
                     selected_models.append(model)
     return selected_models
 
+
 def plot_metric_accuracy(df, metric_name, selected_models):
     plt.figure(figsize=(10, 6))
-    epochs = range(1, len(df) + 1)  # Create a range starting from 1 to the number of epochs
-    
+    # Create a range starting from 1 to the number of epochs
+    epochs = range(1, len(df) + 1)
+
     for model in selected_models:
         if model in df.columns:
             plt.plot(epochs, df[model], label=model)
-    
+
     plt.title(f'{metric_name} over Epochs')
     plt.xlabel('Epochs')
     plt.ylabel(metric_name)
@@ -77,23 +81,24 @@ def plot_metric_accuracy(df, metric_name, selected_models):
     plt.tight_layout()
     st.pyplot(plt)
 
+
 def plot_metric_f1score(scores, metric_name):
     # Sort the models based on their scores in descending order
     sorted_models = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     models, values = zip(*sorted_models)
-    
+
     # Define colors for the bars
     colors = ['gold' if i < 3 else 'skyblue' for i in range(len(models))]
-    
+
     # Create the bar chart
     plt.figure(figsize=(10, 6))
     bars = plt.bar(models, values, color=colors)
-    
+
     # Add text labels to the bars
     for bar, value in zip(bars, values):
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{value:.2f}', 
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{value:.2f}',
                  ha='center', va='bottom')
-    
+
     # Set chart labels and title
     plt.xlabel('Models')
     plt.ylabel(metric_name)
@@ -102,17 +107,31 @@ def plot_metric_f1score(scores, metric_name):
     plt.tight_layout()
     st.pyplot(plt)
 
+
 @st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model('saved-model/t5_fullMerg.h5', custom_objects={'TFT5EncoderModel': TFT5EncoderModel})
-    tokenizer = AutoTokenizer.from_pretrained("michelecafagna26/t5-base-finetuned-sst2-sentiment")
+    model = tf.keras.models.load_model(
+        'saved-model/t5_fullMerg.h5', custom_objects={'TFT5EncoderModel': TFT5EncoderModel})
+    tokenizer = AutoTokenizer.from_pretrained(
+        "michelecafagna26/t5-base-finetuned-sst2-sentiment")
     return model, tokenizer
 
+
 def preprocess_text(dataframe, tokenizer, max_length=256):
-    inputs = tokenizer(dataframe, padding=True, truncation=True, return_tensors="tf", max_length=max_length)
+    tokenizer.padding_side = 'left'
+
+    inputs = tokenizer(
+        dataframe,
+        padding='max_length',
+        truncation=True,
+        return_tensors="tf",
+        max_length=max_length
+    )
+
     input_ids = inputs["input_ids"]
     attention_mask = inputs["attention_mask"]
     return {"input_ids": input_ids, "attention_mask": attention_mask}
+
 
 def make_prediction(input_text, tokenizer):
     inputs = preprocess_text(input_text, tokenizer)
@@ -120,22 +139,10 @@ def make_prediction(input_text, tokenizer):
     prediction_value = predictions.numpy().flatten()[0]
     return prediction_value
 
-model_names = [
-    'ernie_abstract', 't5_abstract', 'xlnet_abstract',
-    'ernie_wiki', 't5_wiki', 'xlnet_wiki',
-    'ernie_balMerg', 't5_balMerg', 'xlnet_balMerg',
-    'ernie_fullMerg', 't5_fullMerg', 'xlnet_fullMerg'
-]
-
-loss_df = pd.read_csv('combined-history/loss_result.csv')
-accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
-val_loss_df = pd.read_csv('combined-history/val_loss_result.csv')
-val_accuracy_df = pd.read_csv('combined-history/val_accuracy_result.csv')
 
 # Sidebar setup for navigation
-with st.sidebar:            
+with st.sidebar:
     with st.container():
-        # Add your logo image using HTML
         st.markdown(
             """
             <div class="logo">
@@ -145,20 +152,33 @@ with st.sidebar:
         )
     st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
     st.divider()
-    
+
     with st.container():
         page = st.selectbox(
             label="Navigation",
             options=("Home", "Analysis Result", "Predict GPT")
         )
-        
-    st.markdown(f'<div style= height:215px </div>', unsafe_allow_html=True)    
+
+    st.markdown(f'<div style= height:215px </div>', unsafe_allow_html=True)
     st.caption('© 2024 Ihlasul Mufti Faqih.')
-    
+
+# # Unhas Logo
+# with st.container():
+#     st.markdown(
+#         """
+#         <div class="logo">
+#             <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="250">
+#         </div>
+#         """, unsafe_allow_html=True
+#     )
+#     st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
+#     st.divider()
+
+# Page Section
 match page:
     case "Home":
+        # Unhas Logo
         with st.container():
-            # Add your logo image using HTML
             st.markdown(
                 """
                 <div class="logo">
@@ -166,14 +186,15 @@ match page:
                 </div>
                 """, unsafe_allow_html=True
             )
-        st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
-        st.divider()
-        
-        st.header("Home")
-    
+            st.markdown(f'<div style= height:80px </div>',
+                        unsafe_allow_html=True)
+            st.divider()
+
+        st.subheader("Home")
+
     case "Analysis Result":
+        # Unhas Logo
         with st.container():
-            # Add your logo image using HTML
             st.markdown(
                 """
                 <div class="logo">
@@ -181,67 +202,101 @@ match page:
                 </div>
                 """, unsafe_allow_html=True
             )
-        st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
-        st.divider()
-            
+            st.markdown(f'<div style= height:80px </div>',
+                        unsafe_allow_html=True)
+            st.divider()
+
+        model_names = [
+            'ernie_abstract', 't5_abstract', 'xlnet_abstract',
+            'ernie_wiki', 't5_wiki', 'xlnet_wiki',
+            'ernie_balMerg', 't5_balMerg', 'xlnet_balMerg',
+            'ernie_fullMerg', 't5_fullMerg', 'xlnet_fullMerg'
+        ]
+
         with st.container():
-            st.header("Analysis Results")
+            st.header("Model Training Results")
             selected_models = get_selected_models()
-        
+
         tab1, tab2 = st.tabs(["Accuracy Score", "F1-Score"])
         with tab1:
-            if selected_models:
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.header("Loss")
-                    plot_metric_accuracy(loss_df, 'Loss', selected_models)
-                    
-                    st.header("Validation Loss")
-                    plot_metric_accuracy(val_loss_df, 'Validation Loss', selected_models)
-                
-                with col2:
-                    st.header("Accuracy")
-                    plot_metric_accuracy(accuracy_df, 'Accuracy', selected_models)
+            loss_df = pd.read_csv('combined-history/loss_result.csv')
+            accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
+            val_loss_df = pd.read_csv('combined-history/val_loss_result.csv')
+            val_accuracy_df = pd.read_csv(
+                'combined-history/val_accuracy_result.csv')
 
-                    st.header("Validation Accuracy")
-                    plot_metric_accuracy(val_accuracy_df, 'Validation Accuracy', selected_models)
-            else:
-                st.warning("Please select at least one model to review the metrics.")
-                
-        with tab2:
             if selected_models:
-                precision_scores = {}
-                recall_scores = {}
-                f1_scores = {}
-                
+                with st.expander("Table"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.subheader("Accuracy")
+                        st.dataframe(
+                            accuracy_df[selected_models].style.highlight_max(axis=1))
+                    with col2:
+                        st.subheader("Validation Accuracy")
+                        st.dataframe(
+                            val_accuracy_df[selected_models].style.highlight_max(axis=1))
+
+                st.divider()
+
+                with st.expander("Char/Graph"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.subheader("Loss")
+                        plot_metric_accuracy(loss_df, 'Loss', selected_models)
+
+                        st.subheader("Accuracy")
+                        plot_metric_accuracy(
+                            accuracy_df, 'Accuracy', selected_models)
+
+                    with col2:
+                        st.subheader("Validation Loss")
+                        plot_metric_accuracy(
+                            val_loss_df, 'Validation Loss', selected_models)
+
+                        st.subheader("Validation Accuracy")
+                        plot_metric_accuracy(
+                            val_accuracy_df, 'Validation Accuracy', selected_models)
+            else:
+                st.warning(
+                    "Please select at least one model to review the metrics.")
+
+        with tab2:
+            precision_scores = {}
+            recall_scores = {}
+            f1_scores = {}
+
+            if selected_models:
                 for model_name in selected_models:
                     file_name = f"f1score-history/{model_name}.txt"
                     with open(file_name, 'r') as file:
                         content = file.read()
-                        precision = float(re.search(r'Precision:\s*([\d.]+)', content).group(1))
-                        recall = float(re.search(r'Recall:\s*([\d.]+)', content).group(1))
-                        f1_score = float(re.search(r'F1 Score:\s*([\d.]+)', content).group(1))
-                        
+                        precision = float(
+                            re.search(r'Precision:\s*([\d.]+)', content).group(1))
+                        recall = float(
+                            re.search(r'Recall:\s*([\d.]+)', content).group(1))
+                        f1_score = float(
+                            re.search(r'F1 Score:\s*([\d.]+)', content).group(1))
+
                         precision_scores[model_name] = precision
                         recall_scores[model_name] = recall
                         f1_scores[model_name] = f1_score
-                        
-                st.header("Precision")
+
+                st.subheader("Precision")
                 plot_metric_f1score(precision_scores, 'Precision')
-                
-                st.header("Recall")
+
+                st.subheader("Recall")
                 plot_metric_f1score(recall_scores, 'Recall')
-                
-                st.header("F1 Score")
+
+                st.subheader("F1 Score")
                 plot_metric_f1score(f1_scores, 'F1 Score')
             else:
-                st.warning("Please select at least one model to review the metrics.")
+                st.warning(
+                    "Please select at least one model to review the metrics.")
 
     case "Predict GPT":
-        model, tokenizer = load_model()
-        
+        # Unhas Logo
         with st.container():
-            # Add your logo image using HTML
             st.markdown(
                 """
                 <div class="logo">
@@ -249,19 +304,25 @@ match page:
                 </div>
                 """, unsafe_allow_html=True
             )
-        st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
-        st.divider()
-        
-        st.header('Text Prediction')
+            st.markdown(f'<div style= height:80px </div>',
+                        unsafe_allow_html=True)
+            st.divider()
+
+        model, tokenizer = load_model()
+
+        st.subheader('Text Prediction')
         input_text = st.text_area('Enter text to predict')
 
-        
         if st.button('Predict'):
             word_count = len(input_text.split())
-            if word_count >= 183:
+
+            if word_count >= 100:
                 with st.spinner('Wait For Prediction 😉'):
                     prediction_value = make_prediction(input_text, tokenizer)
+
                 prediction_percentage = prediction_value * 100
-                st.markdown(f'<div class="result-box">Generated by Machine {prediction_percentage:.2f}%</div>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="result-box">Generated by Machine {prediction_percentage:.2f}%</div>',
+                    unsafe_allow_html=True)
             else:
                 st.error('Please add more text. Text is to short')
