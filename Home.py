@@ -67,8 +67,7 @@ st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
 st.divider()
 
 st.write("""
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse euismod ipsum sem, vitae fermentum est vulputate id. Curabitur venenatis sapien dolor, sed sagittis nulla bibendum eu. Sed condimentum neque et tortor rutrum, quis convallis leo porta. Nam efficitur magna nec turpis commodo hendrerit. Ut sit amet sapien sed ex cursus blandit. Aliquam metus metus, auctor consequat egestas dignissim, dictum sed elit. Duis fermentum ultricies urna in eleifend.
-    Morbi dapibus velit augue, a facilisis mi sollicitudin eu. Nam eu hendrerit ligula, vitae ultricies odio. Phasellus at placerat mi, quis vulputate nibh. Sed orci lectus, fermentum et tincidunt sed, dignissim eu purus. Mauris eget lacinia nulla. Donec dapibus, odio ut gravida placerat, ex risus cursus mi, vitae iaculis ligula velit eget orci. Integer ultrices sapien ligula, quis ultrices justo pretium ac. Proin at nunc ullamcorper, scelerisque lectus et, pellentesque sem. Fusce urna quam, malesuada vel nulla sed, fermentum volutpat nibh. In vel lorem dolor. Nulla suscipit diam nulla, vitae rhoncus mi convallis vitae. Phasellus molestie diam eget metus hendrerit, sit amet fringilla eros convallis.       
+    Aplikasi ini bertujuan
 """)
 
 st.markdown("### Datasets")
