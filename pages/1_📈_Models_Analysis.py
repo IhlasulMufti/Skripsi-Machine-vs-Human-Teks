@@ -43,6 +43,36 @@ st.markdown("""
             position: absolute;
             top: 10px;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #1e1e2f;
+            text-align: left;
+            padding: 8px;
+            font-size: 13px;
+        }
+        th {
+            background-color: #1C1C1C;
+            color: white;
+            font-size: 16px;
+        }
+        tr:nth-child(even) {
+            background-color: #6A6A6A;
+        }
+        tr:nth-child(odd) {
+            background-color: #414141;
+        }
+        a {
+            color: #0013FF; /* DodgerBlue color for links */
+            text-decoration: none; /* Remove underline */
+        }
+        a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -59,7 +89,7 @@ def get_selected_models():
     return selected_models
 
 def plot_metric_accuracy(df, metric_name, selected_models):
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(8, 6))
     # Create a range starting from 1 to the number of epochs
     epochs = range(1, len(df) + 1)
 
@@ -135,19 +165,81 @@ model_names = [
 
 with st.container():
     st.markdown("# HASIL MODEL TRAINING")
+    st.markdown("""
+            Semua nama model yang ada pada penelitian ini merupakan campuran dari nama arsitektur dan dataset yang digunakan.
+            Contohnya: ernie_abstract, berarti arsitektur yang digunakan adalah ernie dan ditraining menggunakan dataset abstract.
+    """)
+
+    with st.expander("Detail Model"):
+        st.html("""
+        <table>
+            <tr>
+                <th>Dataset</th>
+                <th>Keterangan</th>
+            </tr>
+            <tr>
+                <td>Abstract</td>
+                <td>Dataset ini berisikan teks yang diambil dari berbagai abstrak penelitian dengan jumlah 7.000 data untuk
+                    masing-masing teks hasil mesin/kecerdasan buatan dan teks hasil manusia.</td>
+            </tr>
+            <tr>
+                <td>Wiki</td>
+                <td>Dataset ini berisikan teks yang diambil dari berbagai situs wikipedia dengan jumlah 72.000 data untuk
+                    masing-masing teks hasil mesin/kecerdasan buatan dan teks hasil manusia.</td>
+            </tr>
+            <tr>
+                <td>BalMerg</td>
+                <td>Dataset ini berisikan penggabungan datasets abstrak dan wikipedia dengan jumlah data seimbang (14.000) 
+                    untuk masing-masing abstrak dan wikipedia.</td>
+            </tr>
+            <tr>
+                <td>FullMerg</td>
+                <td>Dataset ini berisikan penggabungan datasets abstrak dan wikipedia dengan jumlah data keseluruhan (14.000 
+                    abstrak dan 144.000) abstrak dan wikipedia.</td>
+            </tr>
+            <tr>
+                <th>Model</th>
+                <th>Keterangan</th>
+            </tr>
+            <tr>
+                <td>ERNIE</td>
+                <td>ERNIE merupakan pre-trained model berdasarkan large-scale textual corpora atau kumpulan data teks yang sangat 
+                    besar disertai dengan knowledge graph, model ini dapat mengambil leksikal (makna/pemakaian kata), sintaksis
+                    (struktur/susunan kalimat), dan informasi pengetahuan dari teks secara bersamaan. Lebih lanjut silahkan 
+                    <a href="https://aclanthology.org/P19-1139/" style="color: #E71414;">lihat</a> publikasi.</td>
+            </tr>
+            <tr>
+                <td>XLNet</td>
+                <td>XLNet adalah metode pre-training generalisasi auto-regressive (AR) yang menggabungkan keunggulan dari kedua pendekatan
+                    auto-regresif (AR) dan autoencoding (AE) melalui objektif pemodelan bahasa permutasi. Arsitektur neural network XLNet
+                    dirancang secara cermat untuk berkolaborasi dengan objektif AR, dengan mengintegrasikan elemen seperti Transformer-XL
+                    dan mekanisme twostream yang dirancang dengan baik.
+                    <a href="https://arxiv.org/abs/1906.08237" style="color: #E71414;">lihat</a> publikasi.</td>
+            </tr>
+            <tr>
+                <td>T5</td>
+                <td> Text-to-Text Transfer Transformation (T5) menerapkan metode text-to-text dimana model akan mengambil teks
+                    sebagai input dan memproduksi teks baru sebagai output. Kerangka kerja text-to-text memungkinkan untuk
+                    secara langsung menerapkan model, tujuan, prosedur training, dan proses decoding yang sama untuk setiap
+                    tugas. Lebih lanjut silahkan 
+                    <a href="https://www.jmlr.org/papers/volume21/20-074/20-074.pdf" style="color: #E71414;">lihat</a> publikasi.</td>
+            </tr>
+        </table>
+        """)
+    
     st.markdown("### 📖 Petunjuk Penggunaan")
     st.markdown("""
-            Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk berikut:
-            1. 📄 Masukkan abstrak penelitian atau teks apapun dalam bentuk paragraf.
-            2. 📝 Teks yang dimasukkan harus berbahasa Inggris.
-            3. 🔢 Teks harus memiliki banyak kata minimal 100 kata.
-            4. 🔍 Tekan tombol periksa untuk memulai pengecekan.
-            5. ⏳ Silahkan tunggu hasil pemeriksaan.
+            Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk
+            berikut:
+            1. ✔️ Pilih model yang akan dianalisis perbandingannya.
+            2. 📈 Pilih tab "Accuracy Score" untuk melihat nilai akurasi dan akurasi validasi.
+            3. 📊 Pilih tab "Confusion Matrix" untuk melihat nilai Precision, Recall, dan F1 Score.
+            4. 🔄 Jika gambar gagal muncul silahkan hapus pilihan pada salah satu model kemudian pilih kembali.
     """)
     
     selected_models = get_selected_models()
 
-tab1, tab2 = st.tabs(["Accuracy Score", "F1-Score"])
+tab1, tab2 = st.tabs(["Accuracy Score", "Confusion Matrix"])
 with tab1:
     loss_df = pd.read_csv('combined-history/loss_result.csv')
     accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
