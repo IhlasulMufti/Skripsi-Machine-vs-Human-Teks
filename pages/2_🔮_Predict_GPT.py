@@ -77,6 +77,10 @@ def make_prediction(input_text, tokenizer):
     prediction_value = predictions.numpy().flatten()[0]
     return prediction_value
 
+def real_time_word_count(text):
+    words = text.split()
+    return len(words)
+
 # Sidebar setup for navigation
 with st.sidebar:
     st.markdown(f'<div style= height:160px </div>', unsafe_allow_html=True)
@@ -119,6 +123,10 @@ st.markdown("""
 st.divider()
 
 input_text = st.text_area('Masukkan teks untuk diprediksi')
+
+word_count = real_time_word_count(input_text)
+st.write(f"Jumlah Kata: {word_count}")
+
 
 if st.button('Periksa'):
     word_count = len(input_text.split())
