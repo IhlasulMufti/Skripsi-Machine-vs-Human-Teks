@@ -1,0 +1,7 @@
+pandas
+matplotlib
+streamlit
+tensorflow
+transformers
+huggingface_hub
+torch
