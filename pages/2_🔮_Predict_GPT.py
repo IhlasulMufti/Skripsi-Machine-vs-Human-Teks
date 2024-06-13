@@ -1,6 +1,7 @@
 import streamlit as st
 import tensorflow as tf
 from transformers import AutoTokenizer, TFT5EncoderModel
+from huggingface_hub import from_pretrained_keras
 
 st.set_page_config(page_title="Predict GPT", page_icon="🔮")
 
@@ -48,8 +49,9 @@ st.markdown("""
 
 @st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model(
-        'saved-model/t5_fullMerg.h5', custom_objects={'TFT5EncoderModel': TFT5EncoderModel})
+    # model = tf.keras.models.load_model(
+    #     'saved-model/t5_fullMerg.h5', custom_objects={'TFT5EncoderModel': TFT5EncoderModel})
+    model = from_pretrained_keras("ihlasulmufti/tes-lagi")
     tokenizer = AutoTokenizer.from_pretrained(
         "michelecafagna26/t5-base-finetuned-sst2-sentiment")
     return model, tokenizer
