@@ -6,3 +6,4 @@ transformers
 huggingface_hub
 torch
 tf-keras
+sentencepiece
