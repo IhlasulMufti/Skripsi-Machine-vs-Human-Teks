@@ -136,7 +136,7 @@ with st.sidebar:
     st.markdown(f'<div style= height:160px </div>', unsafe_allow_html=True)
     st.markdown("""
         <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/lab-sisfor.png?raw=true" width="220">
+            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/lab-sisfor.png?raw=true" width="220">
         </div>
     """, unsafe_allow_html=True)
     st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
@@ -148,7 +148,7 @@ with st.container():
     st.markdown(
         """
         <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="250">
+            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/Heading.png?raw=true" width="250">
         </div>
         """, unsafe_allow_html=True
     )
@@ -243,10 +243,10 @@ with st.container():
 
 tab1, tab2 = st.tabs(["Accuracy Score", "Confusion Matrix"])
 with tab1:
-    loss_df = pd.read_csv('combined-history/loss_result.csv')
-    accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
-    val_loss_df = pd.read_csv('combined-history/val_loss_result.csv')
-    val_accuracy_df = pd.read_csv('combined-history/val_accuracy_result.csv')
+    loss_df = pd.read_csv('app/data/combined-history/loss_result.csv')
+    accuracy_df = pd.read_csv('app/data/combined-history/accuracy_result.csv')
+    val_loss_df = pd.read_csv('app/data/combined-history/val_loss_result.csv')
+    val_accuracy_df = pd.read_csv('app/data/combined-history/val_accuracy_result.csv')
     
     with st.expander("Tabel"):
             st.write("""
@@ -314,7 +314,7 @@ with tab2:
 
     if selected_models:
         for model_name in selected_models:
-            file_name = f"f1score-history/{model_name}.txt"
+            file_name = f"app/data/f1score-history/{model_name}.txt"
             with open(file_name, 'r') as file:
                 content = file.read()
                 precision = float(

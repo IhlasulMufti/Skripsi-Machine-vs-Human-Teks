@@ -51,7 +51,7 @@ with st.sidebar:
     st.markdown(f'<div style= height:160px </div>', unsafe_allow_html=True)
     st.markdown("""
         <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/lab-sisfor.png?raw=true" width="220">
+            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/lab-sisfor.png?raw=true" width="220">
         </div>
     """, unsafe_allow_html=True)
     st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
@@ -60,7 +60,7 @@ with st.sidebar:
     
 st.markdown("""
     <div class="logo">
-        <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/asset/Heading.png?raw=true" width="250">
+        <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/Heading.png?raw=true" width="250">
     </div>
 """, unsafe_allow_html=True)
 st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
