@@ -246,8 +246,7 @@ with tab1:
     loss_df = pd.read_csv('combined-history/loss_result.csv')
     accuracy_df = pd.read_csv('combined-history/accuracy_result.csv')
     val_loss_df = pd.read_csv('combined-history/val_loss_result.csv')
-    val_accuracy_df = pd.read_csv(
-        'combined-history/val_accuracy_result.csv')
+    val_accuracy_df = pd.read_csv('combined-history/val_accuracy_result.csv')
     
     with st.expander("Tabel"):
             st.write("""
