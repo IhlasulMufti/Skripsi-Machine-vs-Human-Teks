@@ -1,160 +1,24 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import re
 
-st.set_page_config(page_title="Models Analysis", page_icon="📈")
+from utils.display import sidebar, header_logo, select_models, metric_accuracy, metric_f1score
 
-# Custom CSS
-st.markdown("""
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        .main {
-            background-color: #1e1e2f;
-            color: white;
-        }
-        .stButton > button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 28px;
-            text-align: center;
-            font-size: 18px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 20px;
-        }
-        .stButton > button:hover {
-            color: black;
-        }
-        .stButton {
-            display: flex;
-            justify-content: center;
-        }
-        .result-box {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .logo {
-            position: absolute;
-            top: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: white;
-            font-size: 13px;
-        }
-        th, td {
-            border: 1px solid #1e1e2f;
-            text-align: left;
-            padding: 8px;
-            font-size: 13px;
-        }
-        th {
-            background-color: #1C1C1C;
-            color: white;
-            font-size: 16px;
-        }
-        tr:nth-child(even) {
-            background-color: #6A6A6A;
-        }
-        tr:nth-child(odd) {
-            background-color: #414141;
-        }
-        a {
-            color: #0013FF; /* DodgerBlue color for links */
-            text-decoration: none; /* Remove underline */
-        }
-        a:hover {
-            text-decoration: underline; /* Underline on hover */
-        }
-    </style>
-""", unsafe_allow_html=True)
 
-def get_selected_models():
-    selected_models = []
+st.set_page_config(
+    page_title="Models Analysis",
+    page_icon="📈"
+)
 
-    with st.container():
-        st.markdown("#### Pilih model untuk diulas")
-        cols = st.columns(3)  # Create 3 columns for checkboxes
-        for i, model in enumerate(model_names):
-            with cols[i % 3]:  # Distribute checkboxes across the columns
-                if st.checkbox(model, key=model):
-                    selected_models.append(model)
-    return selected_models
 
-def plot_metric_accuracy(df, metric_name, selected_models):
-    plt.figure(figsize=(8, 6))
-    # Create a range starting from 1 to the number of epochs
-    epochs = range(1, len(df) + 1)
+with open("app/css/styles.css") as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-    for model in selected_models:
-        if model in df.columns:
-            plt.plot(epochs, df[model], label=model)
-
-    plt.title(f'{metric_name} over Epochs')
-    plt.xlabel('Epochs')
-    plt.ylabel(metric_name)
-    plt.xticks(epochs)  # Set x-axis labels to start from 1
-    plt.legend(loc='upper left')  # Change legend location to top left
-    plt.grid(True)
-    plt.tight_layout()
-    st.pyplot(plt)
-    
-def plot_metric_f1score(scores, metric_name):
-    # Sort the models based on their scores in descending order
-    sorted_models = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    models, values = zip(*sorted_models)
-
-    # Define colors for the bars
-    colors = ['gold' if i < 3 else 'skyblue' for i in range(len(models))]
-
-    # Create the bar chart
-    plt.figure(figsize=(10, 6))
-    bars = plt.bar(models, values, color=colors)
-
-    # Add text labels to the bars
-    for bar, value in zip(bars, values):
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{value:.2f}',
-                 ha='center', va='bottom')
-
-    # Set chart labels and title
-    plt.xlabel('Models')
-    plt.ylabel(metric_name)
-    plt.title(f'{metric_name} of Different Models')
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    st.pyplot(plt)
-
-# Sidebar setup for navigation
-with st.sidebar:
-    st.markdown(f'<div style= height:160px </div>', unsafe_allow_html=True)
-    st.markdown("""
-        <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/lab-sisfor.png?raw=true" width="220">
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
-    st.divider()
-    st.caption('© 2024 Ihlasul Mufti Faqih.')
-    
-# Unhas Logo
 with st.container():
-    st.markdown(
-        """
-        <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/Heading.png?raw=true" width="250">
-        </div>
-        """, unsafe_allow_html=True
-    )
-    st.markdown(f'<div style= height:80px </div>',
-                unsafe_allow_html=True)
-    st.divider()
+    sidebar()
+
+with st.container():
+    header_logo()
 
 model_names = [
     'ernie_abstract', 't5_abstract', 'xlnet_abstract',
@@ -226,7 +90,7 @@ with st.container():
             </tr>
         </table>
         """)
-    
+
     st.markdown("### 📖 Petunjuk Penggunaan")
     st.markdown("""
             Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk
@@ -236,25 +100,26 @@ with st.container():
             3. 📊 Pilih tab "Confusion Matrix" untuk melihat nilai Precision, Recall, dan F1 Score.
             4. 🔄 Jika gambar gagal muncul silahkan hapus pilihan pada salah satu model kemudian pilih kembali.
     """)
-    
+
     st.divider()
-    
-    selected_models = get_selected_models()
+
+    selected_models = select_models(model_names)
 
 tab1, tab2 = st.tabs(["Accuracy Score", "Confusion Matrix"])
 with tab1:
     loss_df = pd.read_csv('app/data/combined-history/loss_result.csv')
     accuracy_df = pd.read_csv('app/data/combined-history/accuracy_result.csv')
     val_loss_df = pd.read_csv('app/data/combined-history/val_loss_result.csv')
-    val_accuracy_df = pd.read_csv('app/data/combined-history/val_accuracy_result.csv')
-    
+    val_accuracy_df = pd.read_csv(
+        'app/data/combined-history/val_accuracy_result.csv')
+
     with st.expander("Tabel"):
-            st.write("""
+        st.write("""
                 Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
                 Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
                 tertinggi, hanya kalah pada arsitektur XLNet.
             """)
-            
+
     if selected_models:
         col1, col2 = st.columns(2)
         with col1:
@@ -270,31 +135,31 @@ with tab1:
             "Harap pilih setidaknya satu model untuk meninjau metriknya.")
 
     st.divider()
-        
+
     with st.expander("Grafik"):
-            st.write("""
+        st.write("""
                 Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
                 Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
                 tertinggi, hanya kalah pada arsitektur XLNet.
             """)
-            
+
     if selected_models:
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("### Loss")
-            plot_metric_accuracy(loss_df, 'Loss', selected_models)
+            metric_accuracy(loss_df, 'Loss', selected_models)
 
             st.markdown("### Accuracy")
-            plot_metric_accuracy(
+            metric_accuracy(
                 accuracy_df, 'Accuracy', selected_models)
 
         with col2:
             st.markdown("### Validation Loss")
-            plot_metric_accuracy(
+            metric_accuracy(
                 val_loss_df, 'Validation Loss', selected_models)
 
             st.markdown("### Validation Accuracy")
-            plot_metric_accuracy(
+            metric_accuracy(
                 val_accuracy_df, 'Validation Accuracy', selected_models)
     else:
         st.warning(
@@ -304,7 +169,7 @@ with tab2:
     precision_scores = {}
     recall_scores = {}
     f1_scores = {}
-    
+
     with st.expander("Penjelasan"):
         st.write("""
             Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
@@ -329,13 +194,13 @@ with tab2:
                 f1_scores[model_name] = f1_score
 
         st.markdown("### Precision")
-        plot_metric_f1score(precision_scores, 'Precision')
+        metric_f1score(precision_scores, 'Precision')
 
         st.markdown("### Recall")
-        plot_metric_f1score(recall_scores, 'Recall')
+        metric_f1score(recall_scores, 'Recall')
 
         st.markdown("### F1 Score")
-        plot_metric_f1score(f1_scores, 'F1 Score')
+        metric_f1score(f1_scores, 'F1 Score')
     else:
         st.warning(
             "Harap pilih setidaknya satu model untuk meninjau metriknya.")
