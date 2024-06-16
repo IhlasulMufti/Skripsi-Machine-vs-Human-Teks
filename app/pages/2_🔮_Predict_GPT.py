@@ -1,137 +1,52 @@
 import streamlit as st
-from transformers import AutoTokenizer
-from huggingface_hub import from_pretrained_keras
 
-st.set_page_config(page_title="Predict GPT", page_icon="🔮")
-
-# Custom CSS
-st.markdown("""
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        .main {
-            background-color: #1e1e2f;
-            color: white;
-        }
-        .stButton > button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 28px;
-            text-align: center;
-            font-size: 18px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 20px;
-        }
-        .stButton > button:hover {
-            color: black;
-        }
-        .stButton {
-            display: flex;
-            justify-content: center;
-        }
-        .result-box {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .logo {
-            position: absolute;
-            top: 10px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+from utils.display import sidebar, header_logo, real_time_word_count
+from utils.machine_learning import load_model, make_prediction
 
 
-@st.cache_resource
-def load_model():
-    model = from_pretrained_keras("ihlasulmufti/machine-vs-human-predict-gpt")
-    tokenizer = AutoTokenizer.from_pretrained("michelecafagna26/t5-base-finetuned-sst2-sentiment")
-    return model, tokenizer
+st.set_page_config(
+    page_title="Predict GPT",
+    page_icon="🔮"
+)
 
 
-def preprocess_text(dataframe, tokenizer, max_length=256):
-    tokenizer.padding_side = 'left'
+with open("app/css/styles.css") as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-    inputs = tokenizer(
-        dataframe,
-        padding='max_length',
-        truncation=True,
-        return_tensors="tf",
-        max_length=max_length
-    )
-
-    input_ids = inputs["input_ids"]
-    attention_mask = inputs["attention_mask"]
-    return {"input_ids": input_ids, "attention_mask": attention_mask}
-
-
-def make_prediction(input_text, tokenizer):
-    inputs = preprocess_text(input_text, tokenizer)
-    predictions = model(inputs)
-    prediction_value = predictions.numpy().flatten()[0]
-    return prediction_value
-
-def real_time_word_count(text):
-    words = text.split()
-    return len(words)
-
-# Sidebar setup for navigation
-with st.sidebar:
-    st.markdown(f'<div style= height:160px </div>', unsafe_allow_html=True)
-    st.markdown("""
-        <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/lab-sisfor.png?raw=true" width="220">
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
-    st.divider()
-    st.caption('© 2024 Ihlasul Mufti Faqih.')
-
-# Unhas Logo
 with st.container():
-    st.markdown(
-        """
-        <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/Heading.png?raw=true" width="250">
-        </div>
-        """, unsafe_allow_html=True
-    )
-    st.markdown(f'<div style= height:80px </div>',
-                unsafe_allow_html=True)
+    sidebar()
+
+with st.container():
+    header_logo()
+
+with st.container():
+    st.markdown('# PREDIKSI TEKS GPT')
+
+    st.markdown("### 📖 Petunjuk Penggunaan")
+    st.markdown("""
+                Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk berikut:
+                1. 📄 Masukkan abstrak penelitian atau teks apapun dalam bentuk paragraf.
+                2. 📝 Teks yang dimasukkan harus berbahasa Inggris.
+                3. 🔢 Teks harus memiliki banyak kata minimal 100 kata.
+                4. 🔍 Tekan tombol periksa untuk memulai pengecekan.
+                5. ⏳ Silahkan tunggu hasil pemeriksaan.
+    """)
+
     st.divider()
 
 model, tokenizer = load_model()
-
-st.markdown('# PREDIKSI TEKS GPT')
-
-st.markdown("### 📖 Petunjuk Penggunaan")
-st.markdown("""
-            Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk berikut:
-            1. 📄 Masukkan abstrak penelitian atau teks apapun dalam bentuk paragraf.
-            2. 📝 Teks yang dimasukkan harus berbahasa Inggris.
-            3. 🔢 Teks harus memiliki banyak kata minimal 100 kata.
-            4. 🔍 Tekan tombol periksa untuk memulai pengecekan.
-            5. ⏳ Silahkan tunggu hasil pemeriksaan.
-   """)
-
-st.divider()
 
 input_text = st.text_area('Masukkan teks untuk diprediksi')
 
 word_count = real_time_word_count(input_text)
 st.write(f"Jumlah Kata: {word_count}")
 
-
 if st.button('Periksa'):
     word_count = len(input_text.split())
 
     if word_count >= 100:
         with st.spinner('Wait For Prediction 😉'):
-            prediction_value = make_prediction(input_text, tokenizer)
+            prediction_value = make_prediction(input_text, model, tokenizer)
 
         prediction_percentage = prediction_value * 100
         st.markdown(

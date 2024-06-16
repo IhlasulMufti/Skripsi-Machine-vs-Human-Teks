@@ -1,70 +1,22 @@
 import streamlit as st
+from utils.display import sidebar, header_logo
+
 
 st.set_page_config(
     page_title="Home",
-    page_icon="👋",
+    page_icon="👋"
 )
 
-# Custom CSS
-st.markdown("""
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        .main {
-            background-color: #1e1e2f;
-            color: white;
-        }
-        .stButton > button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 28px;
-            text-align: center;
-            font-size: 18px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 20px;
-        }
-        .stButton > button:hover {
-            color: black;
-        }
-        .stButton {
-            display: flex;
-            justify-content: center;
-        }
-        .result-box {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .logo {
-            position: absolute;
-            top: 10px;
-        }
-    </style>
-""", unsafe_allow_html=True)
 
-# Sidebar setup for navigation
-with st.sidebar:
-    st.markdown(f'<div style= height:160px </div>', unsafe_allow_html=True)
-    st.markdown("""
-        <div class="logo">
-            <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/lab-sisfor.png?raw=true" width="220">
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
-    st.divider()
-    st.caption('© 2024 Ihlasul Mufti Faqih.')
-    
-st.markdown("""
-    <div class="logo">
-        <img src="https://github.com/IhlasulMufti/Skripsi-Machine-vs-Human-Teks/blob/main/app/assets/Heading.png?raw=true" width="250">
-    </div>
-""", unsafe_allow_html=True)
-st.markdown(f'<div style= height:80px </div>', unsafe_allow_html=True)
-st.divider()
+with open("app/css/styles.css") as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+with st.container():
+    sidebar()
+
+with st.container():
+    header_logo()
+
 
 st.write("""
     Aplikasi ini bertujuan

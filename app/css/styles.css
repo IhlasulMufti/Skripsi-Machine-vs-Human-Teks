@@ -1,0 +1,78 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.main {
+    background-color: #1e1e2f;
+    color: white;
+}
+
+.logo {
+    position: absolute;
+    top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    font-size: 13px;
+}
+
+th, td {
+    border: 1px solid #1e1e2f;
+    text-align: left;
+    padding: 8px;
+    font-size: 13px;
+}
+
+th {
+    background-color: #1C1C1C;
+    color: white;
+    font-size: 16px;
+}
+
+tr:nth-child(even) {
+    background-color: #6A6A6A;
+}
+
+tr:nth-child(odd) {
+    background-color: #414141;
+}
+
+a {
+    color: #0013FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.stButton>button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    text-align: center;
+    font-size: 18px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+.stButton>button:hover {
+    color: black;
+}
+
+.stButton {
+    display: flex;
+    justify-content: center;
+}
+
+.result-box {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
