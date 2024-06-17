@@ -12,11 +12,11 @@ def load_model():
     return model, tokenizer
 
 
-def preprocess_text(dataframe, tokenizer, max_length=256):
+def preprocess_text(text, tokenizer, max_length=256):
     tokenizer.padding_side = 'left'
 
     inputs = tokenizer(
-        dataframe,
+        text,
         padding='max_length',
         truncation=True,
         return_tensors="tf",
