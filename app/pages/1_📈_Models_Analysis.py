@@ -28,8 +28,9 @@ model_names = [
 ]
 
 with st.container():
-    st.markdown("# HASIL MODEL TRAINING")
     st.markdown("""
+             # HASIL MODEL TRAINING   
+                
             Semua nama model yang ada pada penelitian ini merupakan campuran dari nama arsitektur dan dataset yang digunakan.
             Contohnya: ernie_abstract, berarti arsitektur yang digunakan adalah ernie dan ditraining menggunakan dataset abstract.
     """)
@@ -58,8 +59,8 @@ with st.container():
             </tr>
             <tr>
                 <td>FullMerg</td>
-                <td>Dataset ini berisikan penggabungan datasets abstrak dan wikipedia dengan jumlah data keseluruhan (14.000 
-                    abstrak dan 144.000) abstrak dan wikipedia.</td>
+                <td>Dataset ini berisikan penggabungan datasets abstrak dan wikipedia dengan jumlah keseluruhan 158.000 (14.000 
+                    abstrak + 144.000 wikipedia) dataset.</td>
             </tr>
             <tr>
                 <th>Model</th>
@@ -70,7 +71,7 @@ with st.container():
                 <td>ERNIE merupakan pre-trained model berdasarkan large-scale textual corpora atau kumpulan data teks yang sangat 
                     besar disertai dengan knowledge graph, model ini dapat mengambil leksikal (makna/pemakaian kata), sintaksis
                     (struktur/susunan kalimat), dan informasi pengetahuan dari teks secara bersamaan. Lebih lanjut silahkan 
-                    <a href="https://aclanthology.org/P19-1139/" style="color: #E71414;">lihat</a> publikasi.</td>
+                    <a href="https://arxiv.org/abs/1905.07129" style="color: #FF0000;">lihat</a> publikasi.</td>
             </tr>
             <tr>
                 <td>XLNet</td>
@@ -78,7 +79,7 @@ with st.container():
                     auto-regresif (AR) dan autoencoding (AE) melalui objektif pemodelan bahasa permutasi. Arsitektur neural network XLNet
                     dirancang secara cermat untuk berkolaborasi dengan objektif AR, dengan mengintegrasikan elemen seperti Transformer-XL
                     dan mekanisme twostream yang dirancang dengan baik.
-                    <a href="https://arxiv.org/abs/1906.08237" style="color: #E71414;">lihat</a> publikasi.</td>
+                    <a href="https://arxiv.org/abs/1906.08237" style="color: #FF0000;">lihat</a> publikasi.</td>
             </tr>
             <tr>
                 <td>T5</td>
@@ -86,13 +87,14 @@ with st.container():
                     sebagai input dan memproduksi teks baru sebagai output. Kerangka kerja text-to-text memungkinkan untuk
                     secara langsung menerapkan model, tujuan, prosedur training, dan proses decoding yang sama untuk setiap
                     tugas. Lebih lanjut silahkan 
-                    <a href="https://www.jmlr.org/papers/volume21/20-074/20-074.pdf" style="color: #E71414;">lihat</a> publikasi.</td>
+                    <a href="https://arxiv.org/abs/1910.10683" style="color: #FF0000;">lihat</a> publikasi.</td>
             </tr>
         </table>
         """)
 
-    st.markdown("### 📖 Petunjuk Penggunaan")
     st.markdown("""
+            ### 📖 Petunjuk Penggunaan
+                
             Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk
             berikut:
             1. ✔️ Pilih model yang akan dianalisis perbandingannya.
@@ -113,12 +115,6 @@ with tab1:
     val_accuracy_df = pd.read_csv(
         'app/data/combined-history/val_accuracy_result.csv')
 
-    with st.expander("Tabel"):
-        st.write("""
-                Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
-                Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
-                tertinggi, hanya kalah pada arsitektur XLNet.
-            """)
 
     if selected_models:
         col1, col2 = st.columns(2)
@@ -130,20 +126,16 @@ with tab1:
             st.markdown("### Validation Accuracy")
             st.dataframe(
                 val_accuracy_df[selected_models].style.highlight_max(axis=1))
-    else:
-        st.warning(
-            "Harap pilih setidaknya satu model untuk meninjau metriknya.")
-
-    st.divider()
-
-    with st.expander("Grafik"):
-        st.write("""
+            
+        with st.expander("Penjelasan Tabel"):
+            st.write("""
                 Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
                 Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
-                tertinggi, hanya kalah pada arsitektur XLNet.
+                tertinggi disetiap model arsitektur yang digunakan.
             """)
 
-    if selected_models:
+        st.divider()
+
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("### Loss")
@@ -161,21 +153,19 @@ with tab1:
             st.markdown("### Validation Accuracy")
             metric_accuracy(
                 val_accuracy_df, 'Validation Accuracy', selected_models)
+            
+        with st.expander("Penjelasan Grafik"):
+            st.write("""
+                Menggunakan tampilan grafik dapat terlihat jelas garis grafik untuk akurasi arsitektur T5 selalu
+                berada paling atas untuk setiap jenis dataset yang digunakan untuk melatih ketiga model arsitektur.
+            """)
     else:
-        st.warning(
-            "Harap pilih setidaknya satu model untuk meninjau metriknya.")
+        st.warning("Harap pilih setidaknya satu model untuk meninjau metriknya.")
 
 with tab2:
     precision_scores = {}
     recall_scores = {}
     f1_scores = {}
-
-    with st.expander("Penjelasan"):
-        st.write("""
-            Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
-            Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
-            tertinggi, hanya kalah pada arsitektur XLNet.
-        """)
 
     if selected_models:
         for model_name in selected_models:
@@ -201,6 +191,18 @@ with tab2:
 
         st.markdown("### F1 Score")
         metric_f1score(f1_scores, 'F1 Score')
+        
+        with st.expander("***Keterangan***"):
+            st.markdown("""
+                <div style="text-align: justify">Salah satu cara untuk menilai ketepatan sebuah model selain nilai akurasinya dalam melakukan
+                prediksi, penilaian juga dapat dilihat dari ketepatan model dalam memberikan hasil prediksi menggunakan pengukuran 
+                <em>Confusion Matrix</em>. Dilihat dari hasil pengukuran F1-Score dari keseluruhan model, dapat disimpulkan bahwa urutan 
+                kemampuan model mulai dari yang paling akurat yaitu T5, XLNet, kemudian ERNIE.
+                </div>
+                
+                <div style="text-align: justify">asdasdas
+                </div><br>
+            """, unsafe_allow_html=True)
     else:
-        st.warning(
-            "Harap pilih setidaknya satu model untuk meninjau metriknya.")
+        st.warning("Harap pilih setidaknya satu model untuk meninjau metriknya.")
+        
