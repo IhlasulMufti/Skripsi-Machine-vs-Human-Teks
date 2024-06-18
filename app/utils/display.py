@@ -12,7 +12,7 @@ def sidebar():
         """, unsafe_allow_html=True)
         st.markdown(f'<div style= height:50px </div>', unsafe_allow_html=True)
         st.divider()
-        st.caption('© 2024 Ihlasul Mufti Faqih.')
+        st.caption('2024 © Ihlasul Mufti Faqih.')
 
 
 def header_logo():

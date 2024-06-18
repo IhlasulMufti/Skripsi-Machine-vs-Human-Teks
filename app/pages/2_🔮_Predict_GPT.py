@@ -20,17 +20,22 @@ with st.container():
     header_logo()
 
 with st.container():
-    st.markdown('# PREDIKSI TEKS GPT')
-
-    st.markdown("### 📖 Petunjuk Penggunaan")
     st.markdown("""
+                # PREDIKSI TEKS GPT
+                <div style="text-align: justify">
+                    Berdasarkan hasil penelitian, t5_fullMerg menjadi model dengan performa paling baik dengan menjadi peringkat kedua
+                    dalam hal akurasi dan menjadi peringkat pertama dalam nilai F1-Score. Maka dari itu, fitur prediksi yang digunakan
+                    pada aplikasi kali ini menggunakan model tersebut.
+                </div><br>
+                
+                ### 📖 Petunjuk Penggunaan
                 Untuk memeriksa sebuah teks adalah hasil buatan mesin/kecerdasan buatan atau bukan, silahkan ikuti petunjuk berikut:
                 1. 📄 Masukkan abstrak penelitian atau teks apapun dalam bentuk paragraf.
                 2. 📝 Teks yang dimasukkan harus berbahasa Inggris.
                 3. 🔢 Teks harus memiliki banyak kata minimal 100 kata.
                 4. 🔍 Tekan tombol periksa untuk memulai pengecekan.
                 5. ⏳ Silahkan tunggu hasil pemeriksaan.
-    """)
+    """,unsafe_allow_html=True)
 
     st.divider()
 

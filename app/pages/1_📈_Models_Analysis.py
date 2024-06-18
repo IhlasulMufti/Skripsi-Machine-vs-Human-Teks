@@ -29,11 +29,13 @@ model_names = [
 
 with st.container():
     st.markdown("""
-             # HASIL MODEL TRAINING   
-                
+        # HASIL MODEL TRAINING   
+        
+        <div style="text-align: justify">
             Semua nama model yang ada pada penelitian ini merupakan campuran dari nama arsitektur dan dataset yang digunakan.
-            Contohnya: ernie_abstract, berarti arsitektur yang digunakan adalah ernie dan ditraining menggunakan dataset abstract.
-    """)
+            Contohnya: ernie_abstract, berarti arsitektur yang digunakan adalah ernie dan dilatih menggunakan dataset abstract.
+        </div><br>
+    """, unsafe_allow_html=True)
 
     with st.expander("Detail Model"):
         st.html("""
@@ -54,12 +56,12 @@ with st.container():
             </tr>
             <tr>
                 <td>BalMerg</td>
-                <td>Dataset ini berisikan penggabungan datasets abstrak dan wikipedia dengan jumlah data seimbang (14.000) 
-                    untuk masing-masing abstrak dan wikipedia.</td>
+                <td>Dataset ini berisikan penggabungan dataset abstrak dan wikipedia dengan jumlah data 14.000 untuk 
+                masing-masing abstrak dan wikipedia.</td>
             </tr>
             <tr>
                 <td>FullMerg</td>
-                <td>Dataset ini berisikan penggabungan datasets abstrak dan wikipedia dengan jumlah keseluruhan 158.000 (14.000 
+                <td>Dataset ini berisikan penggabungan dataset abstrak dan wikipedia dengan jumlah keseluruhan 158.000 (14.000 
                     abstrak + 144.000 wikipedia) dataset.</td>
             </tr>
             <tr>
@@ -127,12 +129,14 @@ with tab1:
             st.dataframe(
                 val_accuracy_df[selected_models].style.highlight_max(axis=1))
             
-        with st.expander("Penjelasan Tabel"):
-            st.write("""
-                Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
-                Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
-                tertinggi disetiap model arsitektur yang digunakan.
-            """)
+        with st.expander("***Penjelasan Tabel***"):
+            st.markdown("""
+                <div style="text-align: justify">
+                    Tingkat akurasi model dapat dilihat pada tabel. Tingkat akurasi tertinggi ditandai dengan warna kuning.
+                    Jika dilihat secara keseluruhan model yang dilatih menggunakan dataset wikipedia menjadi dataset dengan akurasi
+                    tertinggi disetiap model arsitektur yang digunakan.
+                </div><br>
+            """, unsafe_allow_html=True)
 
         st.divider()
 
@@ -154,11 +158,13 @@ with tab1:
             metric_accuracy(
                 val_accuracy_df, 'Validation Accuracy', selected_models)
             
-        with st.expander("Penjelasan Grafik"):
-            st.write("""
-                Menggunakan tampilan grafik dapat terlihat jelas garis grafik untuk akurasi arsitektur T5 selalu
-                berada paling atas untuk setiap jenis dataset yang digunakan untuk melatih ketiga model arsitektur.
-            """)
+        with st.expander("***Penjelasan Grafik***"):
+            st.markdown("""
+                <div style="text-align: justify">
+                    Menggunakan tampilan grafik dapat terlihat jelas garis grafik untuk akurasi arsitektur T5 selalu
+                    berada paling atas untuk setiap jenis dataset yang digunakan untuk melatih ketiga model arsitektur.
+                </div><br>
+            """, unsafe_allow_html=True)
     else:
         st.warning("Harap pilih setidaknya satu model untuk meninjau metriknya.")
 
@@ -194,13 +200,18 @@ with tab2:
         
         with st.expander("***Keterangan***"):
             st.markdown("""
-                <div style="text-align: justify">Salah satu cara untuk menilai ketepatan sebuah model selain nilai akurasinya dalam melakukan
-                prediksi, penilaian juga dapat dilihat dari ketepatan model dalam memberikan hasil prediksi menggunakan pengukuran 
-                <em>Confusion Matrix</em>. Dilihat dari hasil pengukuran F1-Score dari keseluruhan model, dapat disimpulkan bahwa urutan 
-                kemampuan model mulai dari yang paling akurat yaitu T5, XLNet, kemudian ERNIE.
-                </div>
+                <div style="text-align: justify">
+                    Salah satu cara untuk menilai ketepatan sebuah model selain nilai akurasinya dalam melakukan prediksi, penilaian juga
+                    dapat dilihat dari ketepatan model dalam memberikan hasil prediksi menggunakan pengukuran <em>Confusion Matrix</em>.
+                    Dilihat dari hasil pengukuran F1-Score dari keseluruhan model, dapat disimpulkan bahwa urutan kemampuan model mulai
+                    dari yang paling akurat yaitu T5, XLNet, kemudian ERNIE.
+                </div><br>
                 
-                <div style="text-align: justify">asdasdas
+                <div style="text-align: justify">
+                    Meskipun t5_wiki menjadi model dengan nilai akurasi tertinggi, namun jika dilihat berdasarkan nilai F1-Score berada pada 
+                    peringkat ketiga. Sedangkan untuk urutan pertama adalah t5_fullMerg dan urutan kedua ditempati oleh t5_balMerg. Berdasarkan
+                    hasil tersebut disimpulkan bahwa model yang dilatih dengan berbagai tipe teks (abstract dan wikipedia) diperlukan juga 
+                    untuk meningkatkan ketepatan prediksi sebuah model.
                 </div><br>
             """, unsafe_allow_html=True)
     else:
